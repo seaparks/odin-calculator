@@ -1,6 +1,8 @@
-let currentoperator = '';
-let currentNumber   = '';
-let previousNumber  = '';
+let currentOperator = null;
+let firstOperand    = '';
+let secondOperand   = '';
+let displayValue    = '0';
+
 
 const displayDiv = document.getElementById('display');
 
@@ -9,7 +11,7 @@ const operatorButtons = document.querySelectorAll('.operator');
 const functionButtons = document.querySelectorAll('.function');
 
 numberButtons.forEach((button) =>
-    button.addEventListener('click', () => handleNumber(button.value))
+    button.addEventListener('click', () => handleOperand(button.value))
 );
 
 operatorButtons.forEach((button) => 
@@ -20,50 +22,79 @@ functionButtons.forEach((button) =>
     button.addEventListener('click', () => handleFunction(button.value))
 );
 
+updateDisplay(displayValue);
+
 function updateDisplay(string){
     displayDiv.textContent = string;
 }
 
 
 
-function handleNumber(number){
-
-
+function handleOperand(operand){
+    if(!currentOperator){
+        if (displayValue == 0){
+            // first click
+            displayValue = operand;    
+        } else {
+            displayValue += operand;
+        }
+        updateDisplay(displayValue);
+    } else {
+        displayValue = operand;
+        updateDisplay(displayValue);
+    }
 }
 
 function handleOperator(operator){
-
-
+    currentOperator = operator;
+    firstOperand    = displayValue;
 }
 
 function handleFunction(fun){
     switch(fun){
         case 'clear':
-            currentOperator ='';
-            previousNumber = '';
-            currentNumber  = '';
-            updateDisplay("0");
+            handleClear();
             break;
         case 'sign':
-            if (currentNumber){
-                currentNumber = (-1 * Number(currentNumber)).toString();
-                updateDisplay(currentNumber);
-            }    
+            handleSign();
             break;
         case 'percent':
-            console.log(`logged ${fun}`);
+            handlePercent();
             break;
         case 'equals':
-            if (currentOperator && previousNumber && currentNumber){
-                const result = operate(currentOperator, previousNumber, currentNumber);
-                updateDisplay(result);
-                currentOperator = '';
-                previousNumber  = result;
-                currentNumber   = '';
-
-            }
+            handleEquals();
+            break;
     }
 
+}
+
+function handleEquals(){
+    secondOperand = displayValue;
+    result = operate(currentOperator,firstOperand,secondOperand);
+    firstOperand = result;
+    displayValue = result;
+    currentOperator = null;
+    updateDisplay(result);
+}
+
+function handlePercent(){
+    displayValue = (displayValue/100).toString();
+    updateDisplay(displayValue);
+}
+
+function handleSign(){
+    if (displayValue){
+        displayValue = (-1 * Number(displayValue)).toString();
+        updateDisplay(displayValue);
+    }    
+}
+
+function handleClear(){
+    firstOperand = '';
+    secondOperand = '';
+    currentOperator = '';
+    displayValue = '0';
+    updateDisplay(displayValue);
 }
 
 
