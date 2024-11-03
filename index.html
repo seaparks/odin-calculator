@@ -3,11 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script scr='javascript.js' defer></script>
+    <script src='javascript.js' defer></script>
     <link rel="stylesheet" href="./style.css" /> 
-    <title>Calculator</title>
+    <title>Calcutron</title>
 </head>
 <body>
-    
+    <div id="calculator">
+        <div id="display">0</div>
+        
+        <div class="button-row">
+            <button input="button" class="function" value="clear">AC</button>
+            <button input="button" class="function" value="sign">+/-</button>
+            <button input="button" class="function" value="percent">%</button>
+            <button input="button" class="operator" value="divide">/</button>
+        </div>
+
+        <div class="button-row">
+            <button input="button" class="operand" value="7">7</button>
+            <button input="button" class="operand" value="8">8</button>
+            <button input="button" class="operand" value="9">9</button>
+            <button input="button" class="operator" value="multiply">*</button>
+        </div>
+
+        <div class="button-row">
+            <button input="button" class="operand" value="4">4</button>
+            <button input="button" class="operand" value="5">5</button>
+            <button input="button" class="operand" value="6">6</button>
+            <button input="button" class="operator" value="subtract">-</button>
+        </div>
+
+        <div class="button-row">
+            <button input="button" class="operand" value="1">1</button>
+            <button input="button" class="operand" value="2">2</button>
+            <button input="button" class="operand" value="3">3</button>
+            <button input="button" class="operator" value="add">+</button>
+        </div>
+
+        <div class="button-row">
+            <button input="button" class="operand" value="0">0</button>
+            <button input="button" class="decimal" value="decimal">.</button>
+            <button input="button" class="function" value="equals">=</button>
+        </div>
+
+    </div>
 </body>
 </html>
