@@ -1,14 +1,20 @@
 let currentOperator = null;
 let firstOperand    = '';
-let secondOperand   = '';
-let displayValue    = '0';
+let secondOperand     = '';
 
+// used to reset the screen or mark that certain actions are disallowed
+let inBetweenState  = false;
+
+// used to start fresh if someone pressed = and doesn't want to use the result
+let justCalculated  = false;
 
 const displayDiv = document.getElementById('display');
 
 const numberButtons   = document.querySelectorAll('.operand');
 const operatorButtons = document.querySelectorAll('.operator');
 const functionButtons = document.querySelectorAll('.function');
+const decimalButton   = document.getElementById('decimal');
+const equalsButton    = document.getElementById('equals');
 
 numberButtons.forEach((button) =>
     button.addEventListener('click', () => handleOperand(button.value))
@@ -22,32 +28,42 @@ functionButtons.forEach((button) =>
     button.addEventListener('click', () => handleFunction(button.value))
 );
 
-updateDisplay(displayValue);
-
-function updateDisplay(string){
-    displayDiv.textContent = string;
-}
-
+decimalButton.addEventListener('click', handleDecimal);
+equalsButton.addEventListener('click', handleEquals);
 
 
 function handleOperand(operand){
-    if(!currentOperator){
-        if (displayValue == 0){
-            // first click
-            displayValue = operand;    
-        } else {
-            displayValue += operand;
-        }
-        updateDisplay(displayValue);
+    if(displayDiv.textContent === '0' || inBetweenState) {
+        resetScreen();
+    }
+    
+    if(justCalculated){
+        handleClear();
+        displayDiv.textContent = operand;
     } else {
-        displayValue = operand;
-        updateDisplay(displayValue);
+        displayDiv.textContent += operand;
     }
 }
 
 function handleOperator(operator){
+    if (currentOperator !== null) handleEquals();
+    firstOperand    = displayDiv.textContent;
     currentOperator = operator;
-    firstOperand    = displayValue;
+    inBetweenState  = true;
+    justCalculated  = false;
+}
+
+function handleEquals(){
+    if(currentOperator === null || inBetweenState) return;
+    if(currentOperator === 'divide' && displayDiv.textContent === '0'){
+        displayDiv.textContent = 'ERR';
+        setTimeout(handleClear,1500);
+        return;
+    }
+    secondOperand = displayDiv.textContent;
+    displayDiv.textContent = Math.round(operate(currentOperator,firstOperand,secondOperand) * 1000)/1000;
+    currentOperator = null;
+    justCalculated  = true;
 }
 
 function handleFunction(fun){
@@ -61,43 +77,37 @@ function handleFunction(fun){
         case 'percent':
             handlePercent();
             break;
-        case 'equals':
-            handleEquals();
-            break;
     }
 
 }
 
-function handleEquals(){
-    secondOperand = displayValue;
-    result = operate(currentOperator,firstOperand,secondOperand);
-    firstOperand = result;
-    displayValue = result;
-    currentOperator = null;
-    updateDisplay(result);
-}
-
 function handlePercent(){
-    displayValue = (displayValue/100).toString();
-    updateDisplay(displayValue);
+    displayDiv.textContent = (Math.round( (displayDiv.textContent/100)*100)/100).toString();
 }
 
 function handleSign(){
-    if (displayValue){
-        displayValue = (-1 * Number(displayValue)).toString();
-        updateDisplay(displayValue);
-    }    
+    displayDiv.textContent = (-1 * Number(displayDiv.textContent)).toString();
+}
+
+function handleDecimal(){
+    if(!displayDiv.textContent.includes('.')){
+        displayDiv.textContent += '.';
+    }
 }
 
 function handleClear(){
     firstOperand = '';
     secondOperand = '';
-    currentOperator = '';
-    displayValue = '0';
-    updateDisplay(displayValue);
+    currentOperator = null;
+    displayDiv.textContent = '0';
+    inBetweenState = false;
+    justCalculated = false;
 }
 
-
+function resetScreen(){
+    displayDiv.textContent = '';
+    inBetweenState = false;
+}
 
 function add(a,b){
     return a+b;
@@ -127,7 +137,6 @@ function operate(operator,a,b){
         case 'multiply':
             return multiply(a,b);
         case 'divide':
-            if (b === 0) return null;
             return divide(a,b);
         default:
             return null;

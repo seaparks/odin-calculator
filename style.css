@@ -50,10 +50,8 @@ button.equals {
     background-color: #FF9500
 }
 
-button.clear,
-button.sign,
-button.percent {
-    background-color: #D4D4D2;
+button.function {
+    background-color: #A9A9A9;
 }
 
 button.operand,
